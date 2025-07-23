@@ -102,4 +102,19 @@ public class Carro extends Veiculo{
                 return 0.0;  // Retorno padrão caso não seja nenhum dos tipos.
         }
     }
+
+    @Override
+    public String toString() {
+        // Começa com as informações da classe pai (Veiculo) para reutilizar o código.
+        // Para que isso funcione perfeitamente, a classe Veiculo também deve ter um bom toString().
+        // Se não tiver, ele pegará o padrão, mas a estrutura ainda é a correta.
+        String infoVeiculo = super.toString();
+
+        // Adiciona as informações específicas do Carro
+        return infoVeiculo + " | Carro {" +
+                "numeroPortas=" + numeroPortas +
+                ", combustivel=" + combustivel +
+                ", temArCondicionado=" + (temArCondicionado ? "Sim" : "Não") +
+                '}';
+    }
 }
