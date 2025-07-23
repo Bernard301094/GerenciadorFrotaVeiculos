@@ -1,4 +1,4 @@
-package br.com.empresa.frota.main;
+package br.com.gestaofrota.main;
 
 public class Main {
     public static void main(String[] args) {

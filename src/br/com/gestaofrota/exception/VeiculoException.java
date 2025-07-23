@@ -1,4 +1,4 @@
-package br.com.empresa.frota.exception;
+package br.com.gestaofrota.exception;
 
 public class VeiculoException extends RuntimeException {
     public VeiculoException(String message) {

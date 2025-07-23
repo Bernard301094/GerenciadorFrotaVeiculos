@@ -1,4 +1,4 @@
-package br.com.empresa.frota.enums;
+package br.com.gestaofrota.enums;
 
 public enum TipoCombustivel {
     GASOLINA,

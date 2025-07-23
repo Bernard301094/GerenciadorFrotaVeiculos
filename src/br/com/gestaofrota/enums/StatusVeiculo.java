@@ -1,6 +1,6 @@
-package br.com.empresa.frota.enums;
+package br.com.gestaofrota.enums;
 
-public enum EstadoVeiculo {
+public enum StatusVeiculo {
     DISPONIVEL,
     EM_MANUTENCAO,
     FORA_DE_SERVICO,
