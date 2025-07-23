@@ -89,7 +89,7 @@ public class Carro extends Veiculo{
     }
 
     public double calcularConsumoMedio() {
-        switch (this.combustivel) {
+        switch (getCombustivel()) {
             case GASOLINA:
                 return 12.5; // km/L
             case DIESEL:
