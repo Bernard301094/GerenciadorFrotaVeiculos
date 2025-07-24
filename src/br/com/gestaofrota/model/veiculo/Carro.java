@@ -89,18 +89,12 @@ public class Carro extends Veiculo{
     }
 
     public double calcularConsumoMedio() {
-        switch (getCombustivel()) {
-            case GASOLINA:
-                return 12.5; // km/L
-            case DIESEL:
-                return 10.0; // km/L
-            case ELETRICO:
-                return 6.5;  // km/kWh (representação)
-            case HIBRIDO:
-                return 18.0; // km/L
-            default:
-                return 0.0;  // Retorno padrão caso não seja nenhum dos tipos.
-        }
+        return switch (getCombustivel()) {
+            case GASOLINA -> 12.5; // km/L
+            case DIESEL -> 10.0; // km/L
+            case ELETRICO -> 6.5;  // km/kWh (representação)
+            case HIBRIDO -> 18.0; // km/L
+        };
     }
 
     @Override
