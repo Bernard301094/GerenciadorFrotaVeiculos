@@ -6,9 +6,9 @@ import java.time.Year;
 
 public class Carro extends Veiculo{
 
-    private Integer numeroPortas;
+    private int numeroPortas;
     private TipoCombustivel combustivel;
-    private Boolean temArCondicionado;
+    private boolean temArCondicionado;
 
     public Carro(String placa, String marca, String modelo, Integer ano, Integer numeroPortas, TipoCombustivel combustivel, Boolean temArCondicionado) {
         super(placa, marca, modelo, ano);
