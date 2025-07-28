@@ -98,8 +98,7 @@ public abstract class Veiculo {
     public void enviarParaManutencao() {
         if (status != StatusVeiculo.EM_USO) {
             status = StatusVeiculo.EM_MANUTENCAO;
-
-            setDataUltimaManutencao(dataUltimaManutencao = new Date());
+            setDataUltimaManutencao(new Date());
         }
     }
 
@@ -116,12 +115,11 @@ public abstract class Veiculo {
     }
 
     public void atualizarQuilometragem(double km) {
-        Double quilometragemAtual = 0.0;
-        if (km > 0) {
-            quilometragemAtual += getQuilometragem() + km;
-        } else {
+        if (km <= 0) {
             throw new VeiculoException("A quilometragem não pode ser negativa.");
         }
+
+        double quilometragemAtual = (getQuilometragem() != null ? getQuilometragem() : 0.0) + km;
         setQuilometragem(quilometragemAtual);
     }
 
@@ -129,7 +127,7 @@ public abstract class Veiculo {
 
     public boolean necessitaManutencao() {
         // Verifica se a quilometragem ultrapassa 10.000 km
-        if (getQuilometragem() > 10000) {
+        if (getQuilometragem() != null && getQuilometragem() > 10000) {
             return true;
         }
 
