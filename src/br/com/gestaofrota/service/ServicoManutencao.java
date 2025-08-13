@@ -23,18 +23,25 @@ public class ServicoManutencao {
         double quilometragem = 0;
 
         // PASSO 3: Definir limites conforme o tipo de veículo
-        int limiteManutencao = 0;
-        int limiteTempoMeses = 0;
+        int limiteManutencao;
+        int limiteTempoMeses;
 
-        if (veiculo instanceof Carro) {
-            limiteManutencao = 10000;
-            limiteTempoMeses = 6;
-        } else if (veiculo instanceof Motocicleta) {
-            limiteManutencao = 8000;
-            limiteTempoMeses = 4;
-        } else if (veiculo instanceof Caminhao) {
-            limiteManutencao = 15000;
-            limiteTempoMeses = 3;
+        // Usando pattern matching para switch (recurso padrão do Java 21+) para definir os limites
+        switch (veiculo) {
+            case Carro c -> {
+                limiteManutencao = 10000;
+                limiteTempoMeses = 6;
+            }
+            case Motocicleta m -> {
+                limiteManutencao = 8000;
+                limiteTempoMeses = 4;
+            }
+            case Caminhao c -> {
+                limiteManutencao = 15000;
+                limiteTempoMeses = 3;
+            }
+            // Adicionar um caso default para tipos de veículo inesperados
+            default -> throw new VeiculoException("Tipo de veículo não suportado: " + veiculo.getClass().getSimpleName());
         }
 
         if (quilometragemAtual < limiteManutencao) {
@@ -82,16 +89,13 @@ public class ServicoManutencao {
 
             // Estimar km por mês baseado no tipo de veículo (inline)
             int kmPromedioMes;
-            if (veiculo instanceof Carro) {
-                kmPromedioMes = 1000; // Carros rodam em média 1000 km/mês
-            } else if (veiculo instanceof Motocicleta) {
-                kmPromedioMes = 800;  // Motos rodam em média 800 km/mês
-            } else if (veiculo instanceof Caminhao) {
-                kmPromedioMes = 2000; // Caminhões rodam em média 2000 km/mês
-            } else {
-                kmPromedioMes = 1000; // Padrão caso não identifique o tipo
-            }
 
+            switch (veiculo) {
+                case Carro c -> kmPromedioMes = 1000; // Carros rodam em média 1000 km/mês
+                case Motocicleta m -> kmPromedioMes = 800; // Motos rodam em média 800 km/mês
+                case Caminhao c -> kmPromedioMes = 2000; // Caminhões rodam em média 2000 km/mês
+                default -> kmPromedioMes = 1000; // Padrão caso não identifique o tipo
+            }
             // Calcular quantos meses faltam baseado no km restante
             int mesesParaLimite = (int) Math.ceil(kmRestantes / kmPromedioMes);
 
