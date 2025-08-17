@@ -234,6 +234,27 @@ public class ServicoManutencao {
     }
 
     public void agendarManutencaoPreventiva(Veiculo veiculo) {
+        if (veiculo == null) {
+            throw new VeiculoException("Veiculo' não pode ser null");
+        }
 
+        Date proximaManutencao = calcularProximaManutencao(veiculo);
+
+        Calendar calAgendamento = Calendar.getInstance();
+        calAgendamento.setTime(proximaManutencao);
+        calAgendamento.add(Calendar.DAY_OF_MONTH, -7);
+
+        Date dataAgendamento = calAgendamento.getTime();
+
+        Date hoje = new Date();
+        if (dataAgendamento.before(hoje)) {
+           calAgendamento = Calendar.getInstance();
+           calAgendamento.add(Calendar.DAY_OF_MONTH, 1);
+           dataAgendamento = calAgendamento.getTime();
+        }
+
+        System.out.println("Manutenção preventiva agendada para: " + dataAgendamento + "\n"
+                + "Veículo: " + veiculo.getPlaca() + "\n"
+                + "Tipo: " + veiculo.getClass().getSimpleName());
     }
 }
