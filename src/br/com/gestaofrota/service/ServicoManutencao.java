@@ -131,7 +131,90 @@ public class ServicoManutencao {
     }
 
     public String gerarRelatorioManutencao(List<Veiculo> veiculos) {
+        // PASSO 1: Validação inicial
+        if (veiculos == null) {
+            throw new VeiculoException("A lista de veículos não pode ser null.");
+        }
+        if (veiculos.isEmpty()) {
+            return "Não há veículos para analisar.\n";
+        }
 
+        // PASSO 2: Variáveis de controle
+        int veiculosEmDia = 0;
+        int veiculosVencidos = 0;
+        int veiculosProximoVencimento = 0;
+        StringBuilder relatorio = new StringBuilder();
+        Date hoje = new Date();
+
+        // Listas para alertas
+        StringBuilder alertasVencidos = new StringBuilder();
+        StringBuilder alertasProximos = new StringBuilder();
+
+        // PASSO 3: Loop detalhado
+        relatorio.append("DETALHES DOS VEÍCULOS:\n");
+        relatorio.append("Placa | Modelo | Tipo | Status | Próxima Manutenção\n");
+        relatorio.append("---------------------------------------------------\n");
+
+        for (Veiculo veiculo : veiculos) {
+            String placa = veiculo.getPlaca();
+            String modelo = veiculo.getModelo();
+            String tipo = veiculo.getClass().getSimpleName();
+
+            Date proximaManutencao = calcularProximaManutencao(veiculo);
+
+            long diffMillis = proximaManutencao.getTime() - hoje.getTime();
+            long diffDias = diffMillis / (1000 * 60 * 60 * 24);
+
+            String status;
+            if (!proximaManutencao.after(hoje)) {
+                status = "VENCIDO";
+                veiculosVencidos++;
+                alertasVencidos.append(placa).append(" (").append(modelo).append(")\n");
+            } else if (diffDias <= 30) {
+                status = "PRÓXIMO DO VENCIMENTO";
+                veiculosProximoVencimento++;
+                alertasProximos.append(placa).append(" (").append(modelo).append(")\n");
+            } else {
+                status = "EM DIA";
+                veiculosEmDia++;
+            }
+
+            relatorio.append(placa).append(" | ")
+                    .append(modelo).append(" | ")
+                    .append(tipo).append(" | ")
+                    .append(status).append(" | ")
+                    .append(proximaManutencao).append("\n");
+        }
+
+        // PASSO 4: Estatísticas gerais
+        int total = veiculos.size();
+        double percEmDia = (veiculosEmDia * 100.0) / total;
+        double percVencidos = (veiculosVencidos * 100.0) / total;
+        double percProximos = (veiculosProximoVencimento * 100.0) / total;
+
+        // PASSO 5: Montar relatório final
+        StringBuilder resultado = new StringBuilder();
+        resultado.append("RELATÓRIO DE MANUTENÇÃO DA FROTA\n");
+        resultado.append("Data: ").append(new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm").format(hoje)).append("\n");
+        resultado.append("===================================================\n");
+        resultado.append("RESUMO:\n");
+        resultado.append("Total de veículos analisados: ").append(total).append("\n");
+        resultado.append(String.format("Em dia: %d (%.1f%%)\n", veiculosEmDia, percEmDia));
+        resultado.append(String.format("Vencidos: %d (%.1f%%)\n", veiculosVencidos, percVencidos));
+        resultado.append(String.format("Próximos do vencimento: %d (%.1f%%)\n", veiculosProximoVencimento, percProximos));
+        resultado.append("---------------------------------------------------\n");
+        resultado.append(relatorio);
+
+        // Seção de alertas
+        if (veiculosVencidos > 0) {
+            resultado.append("\nALERTAS - MANUTENÇÃO VENCIDA:\n").append(alertasVencidos);
+        }
+        if (veiculosProximoVencimento > 0) {
+            resultado.append("\nALERTAS - PRÓXIMOS DO VENCIMENTO:\n").append(alertasProximos);
+        }
+
+        // PASSO 6: Retornar relatório
+        return resultado.toString();
     }
 
     public boolean validarStatusParaOperacao(Veiculo veiculo) {
