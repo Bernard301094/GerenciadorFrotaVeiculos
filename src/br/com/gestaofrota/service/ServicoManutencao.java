@@ -218,7 +218,19 @@ public class ServicoManutencao {
     }
 
     public boolean validarStatusParaOperacao(Veiculo veiculo) {
+        if (veiculo == null) {
+            throw new VeiculoException("Veículo não pode ser null");
+        }
 
+        Date hoje = new Date();
+        Date dataProximaManutencao = calcularProximaManutencao(veiculo);
+
+        if (!dataProximaManutencao.after(hoje)) {
+            System.out.println("ALERTA: Manutenção vencida ou para hoje (" + dataProximaManutencao + "). Veículo não pode operar.");
+            return false; // Não pode operar
+        }
+        System.out.println("Status OK. Veículo pode operar. Próxima manutenção em: " + dataProximaManutencao);
+        return true; // Pode operar
     }
 
     public void agendarManutencaoPreventiva(Veiculo veiculo) {
