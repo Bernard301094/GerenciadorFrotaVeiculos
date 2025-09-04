@@ -4,6 +4,7 @@ import br.com.gestaofrota.enums.StatusVeiculo;
 import br.com.gestaofrota.exception.VeiculoException;
 import br.com.gestaofrota.model.veiculo.Veiculo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class FrotaVeiculos {
@@ -61,7 +62,18 @@ public class FrotaVeiculos {
     }
 
     public List<Veiculo> listarPorStatus(StatusVeiculo status) {
-        return null;
+        if (status == null) {
+            throw new VeiculoException("Status não pode ser nulo");
+        }
+
+        ArrayList<Veiculo> veiculosFiltrados = new ArrayList<>();
+
+        for(Veiculo v : veiculos) {
+            if (v.getStatus().equals(status)) {
+                veiculosFiltrados.add(v);
+            }
+        }
+        return veiculosFiltrados;
     }
 
     public double calcularCustoManutencaoTotal() {
