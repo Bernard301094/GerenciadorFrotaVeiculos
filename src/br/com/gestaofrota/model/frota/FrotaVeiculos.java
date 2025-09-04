@@ -33,7 +33,18 @@ public class FrotaVeiculos {
     }
 
     public void removerVeiculo(String placa) {
+        if (placa == null) {
+            throw new VeiculoException("Veículo não pode ser nulo");
+        }
 
+        for(Veiculo v : veiculos) {
+            if (v.getPlaca().equals(placa)) {
+                veiculos.remove(v);
+                System.out.println("Veículo removido com sucesso");
+                return;
+            }
+        }
+        throw new VeiculoException("Veículo não encontrado");
     }
 
     public Veiculo buscarVeiculo(String placa) {
