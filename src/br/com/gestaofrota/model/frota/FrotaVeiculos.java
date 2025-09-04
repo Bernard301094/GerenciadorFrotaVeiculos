@@ -48,8 +48,16 @@ public class FrotaVeiculos {
     }
 
     public Veiculo buscarVeiculo(String placa) {
+        if (placa == null) {
+            throw new VeiculoException("Veículo não pode ser nulo");
+        }
 
-        return null;
+        for(Veiculo v : veiculos) {
+            if (v.getPlaca().equals(placa)) {
+                return v;
+            }
+        }
+        throw new VeiculoException("Veículo não encontrado");
     }
 
     public List<Veiculo> listarPorStatus(StatusVeiculo status) {
