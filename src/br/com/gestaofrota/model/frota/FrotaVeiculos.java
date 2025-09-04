@@ -87,7 +87,18 @@ public class FrotaVeiculos {
     }
 
     public List<Veiculo> obterVeiculosDisponiveis() {
-        return null;
+        if (veiculos == null) {
+            throw new VeiculoException("Veículo não pode ser nulo");
+        }
+
+        ArrayList<Veiculo> veiculosFiltrados = new ArrayList<>();
+        for(Veiculo v : veiculos) {
+            if (v.getStatus().equals(StatusVeiculo.DISPONIVEL)) {
+                veiculosFiltrados.add(v);
+            }
+        }
+
+        return veiculosFiltrados;
     }
 
     public String obterEstatisticas() {
