@@ -77,7 +77,13 @@ public class FrotaVeiculos {
     }
 
     public double calcularCustoManutencaoTotal() {
-        return 0;
+        double custoTotal = 0.0;
+
+        for(Veiculo v : veiculos) {
+            custoTotal += v.calcularCustoManutencao();
+        }
+
+        return custoTotal;
     }
 
     public List<Veiculo> obterVeiculosDisponiveis() {
