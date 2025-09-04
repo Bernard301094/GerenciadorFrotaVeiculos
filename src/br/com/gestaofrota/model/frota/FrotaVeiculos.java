@@ -136,11 +136,15 @@ public class FrotaVeiculos {
                 }
             }
 
-        return String.format("""
-                === ESTATÍSTICAS DA FROTA ===
-                Total de veículos: %d
-                Carros: %d | Motos: %d | Caminhões: %d
-                Disponíveis: %d | Em uso: %d | Em manutenção: %d | Fora de serviço: %d""",
-                totalVeiculos, totalCarros, totalMotos, totalCaminhoes, disponiveis, emUso, emManutencao, foraDeServico);
+        return new StringBuilder("=== ESTATÍSTICAS DA FROTA ===\n")
+                .append("Total de veículos: ").append(totalVeiculos).append("\n")
+                .append("Carros: ").append(totalCarros)
+                .append(" | Motos: ").append(totalMotos)
+                .append(" | Caminhões: ").append(totalCaminhoes).append("\n")
+                .append("Disponíveis: ").append(disponiveis)
+                .append(" | Em uso: ").append(emUso)
+                .append(" | Em manutenção: ").append(emManutencao)
+                .append(" | Fora de serviço: ").append(foraDeServico)
+                .toString();
     }
 }
