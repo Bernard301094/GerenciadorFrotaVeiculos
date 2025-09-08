@@ -2,6 +2,9 @@ package br.com.gestaofrota.service;
 
 import br.com.gestaofrota.exception.VeiculoException;
 import br.com.gestaofrota.model.frota.FrotaVeiculos;
+import br.com.gestaofrota.model.veiculo.Caminhao;
+import br.com.gestaofrota.model.veiculo.Carro;
+import br.com.gestaofrota.model.veiculo.Motocicleta;
 import br.com.gestaofrota.model.veiculo.Veiculo;
 
 import java.text.SimpleDateFormat;
@@ -84,8 +87,91 @@ public class RelatorioFrota {
     }
 
     public String gerarRelatorioCustos(FrotaVeiculos frota) {
+        if (frota == null || frota.getVeiculos() == null || frota.getVeiculos().isEmpty()) {
+            throw new VeiculoException("Não há veículos na frota.");
+        }
 
-        return "";
+        int quantosCarros = 0,
+                quantasMotos = 0,
+                quantosCaminhoes = 0;
+
+        double custoTotalCarros = 0.0,
+                custoTotalMotos = 0.0,
+                custoTotalCaminhoes = 0.0,
+                custoTotalFrota = 0.0;
+
+        for (Veiculo veiculo : frota.getVeiculos()) {
+            switch (veiculo) {
+                case Carro carro -> {
+                    custoTotalCarros += carro.calcularCustoManutencao();
+                    quantosCarros++;
+                }
+                case Motocicleta motocicleta -> {
+                    custoTotalMotos += motocicleta.calcularCustoManutencao();
+                    quantasMotos++;
+                }
+                case Caminhao caminhao -> {
+                    custoTotalCaminhoes += caminhao.calcularCustoManutencao();
+                    quantosCaminhoes++;
+                }
+                default -> {
+                }
+            }
+        }
+        custoTotalFrota += custoTotalCaminhoes + custoTotalMotos + custoTotalCarros;
+
+        double mediaGeral = custoTotalFrota / (quantosCarros + quantasMotos + quantosCaminhoes);
+        double mediaCarros = 0.0;
+        if (quantosCarros > 0) {
+            mediaCarros = custoTotalCarros / quantosCarros;
+        }
+
+        double mediaMotos = 0.0;
+        if (quantasMotos > 0) {
+            mediaMotos = custoTotalMotos / quantasMotos;
+        }
+
+        double mediaCaminhoes = 0.0;
+        if (quantosCaminhoes > 0) {
+            mediaCaminhoes = custoTotalCaminhoes / quantosCaminhoes;
+        }
+
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+        String dataAtual = sdf.format(new Date());
+
+        int totalVeiculos = quantosCarros + quantasMotos + quantosCaminhoes;
+
+        double percCarros = (totalVeiculos > 0) ? (custoTotalCarros * 100.0 / custoTotalFrota) : 0.0;
+        double percMotos = (totalVeiculos > 0) ? (custoTotalMotos * 100.0 / custoTotalFrota) : 0.0;
+        double percCaminhoes = (totalVeiculos > 0) ? (custoTotalCaminhoes * 100.0 / custoTotalFrota) : 0.0;
+
+        StringBuilder relatorio = new StringBuilder();
+
+        // Cabeçalho
+        relatorio.append("=== RELATÓRIO DE CUSTOS DA FROTA ===\n");
+        relatorio.append("Data: ").append(dataAtual).append("\n\n");
+
+        // Resumo Geral
+        relatorio.append(String.format("- Total de veículos analisados: %d\n", totalVeiculos));
+        relatorio.append(String.format("- Custo total da frota: R$ %.2f\n", custoTotalFrota));
+        relatorio.append(String.format("- Custo médio por veículo: R$ %.2f\n\n", mediaGeral));
+
+        // Detalhamento
+        relatorio.append("BREAKDOWN POR CATEGORIA:\n");
+        relatorio.append(String.format("Carros (%d unidades):\n", quantosCarros));
+        relatorio.append(String.format("- Custo total: R$ %.2f\n", custoTotalCarros));
+        relatorio.append(String.format("- Custo médio: R$ %.2f\n", mediaCarros));
+        relatorio.append(String.format("- Percentual do total: %.1f%%\n\n", percCarros));
+        relatorio.append(String.format("Motocicletas (%d unidades):\n", quantasMotos));
+        relatorio.append(String.format("- Custo total: R$ %.2f\n", custoTotalMotos));
+        relatorio.append(String.format("- Custo médio: R$ %.2f\n", mediaMotos));
+        relatorio.append(String.format("- Percentual do total: %.1f%%\n\n", percMotos));
+        relatorio.append(String.format("Caminhões (%d unidades):\n", quantosCaminhoes));
+        relatorio.append(String.format("- Custo total: R$ %.2f\n", custoTotalCaminhoes));
+        relatorio.append(String.format("- Custo médio: R$ %.2f\n", mediaCaminhoes));
+        relatorio.append(String.format("- Percentual do total: %.1f%%\n", percCaminhoes));
+
+        return relatorio.toString();
     }
 
     public String gerarRelatorioQuilometragem(FrotaVeiculos frota) {
