@@ -7,8 +7,16 @@ import br.com.gestaofrota.model.veiculo.Carro;
 import br.com.gestaofrota.model.veiculo.Motocicleta;
 import br.com.gestaofrota.model.veiculo.Veiculo;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.Set;
 
 public class RelatorioFrota {
 
@@ -257,6 +265,47 @@ public class RelatorioFrota {
     }
 
     public void exportarRelatorios(String conteudo, String formato) {
+        // 1. Validar parâmetros de entrada
+        if (conteudo == null || conteudo.trim().isEmpty()) {
+            throw new VeiculoException("Conteúdo não pode ser nulo ou vazio");
+        }
+        if (formato == null || formato.trim().isEmpty()) {
+            throw new VeiculoException("Formato não pode ser nulo ou vazio");
+        }
 
+        // 2. Normalizar e validar o formato usando um Set para maior clareza
+        String formatoLimpo = formato.trim().toUpperCase();
+        Set<String> formatosSuportados = Set.of("TXT", "CSV", "JSON");
+        if (!formatosSuportados.contains(formatoLimpo)) {
+            throw new VeiculoException("Formato não suportado. Use: " + formatosSuportados);
+        }
+
+        try {
+            // 3. Obter timestamp atual com a API java.time (moderna e thread-safe)
+            DateTimeFormatter formatoData = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
+            String timestamp = LocalDateTime.now().format(formatoData);
+
+            // 4. Gerar nome do arquivo de forma dinâmica, sem a necessidade de um switch
+            String nomeArquivo = String.format("relatorio_frota_%s.%s", timestamp, formatoLimpo.toLowerCase());
+
+            // 5. Usar a API java.nio.file para manipular caminhos e diretórios de forma robusta
+            Path diretorio = Paths.get("relatorios");
+            // Cria o diretório (e qualquer pasta pai necessária) se ele não existir.
+            // Se já existir, o método não faz nada e não lança erro.
+            Files.createDirectories(diretorio);
+
+            // Resolve o caminho completo do arquivo de forma independente do sistema operacional
+            Path caminhoCompleto = diretorio.resolve(nomeArquivo);
+
+            // 6. Escrever no arquivo de forma simples, garantindo a codificação UTF-8
+            // Esta é a correção principal para o erro de compilação que o código original tinha.
+            Files.writeString(caminhoCompleto, conteudo, StandardCharsets.UTF_8);
+
+            System.out.println("Relatório salvo com sucesso em: " + caminhoCompleto.toAbsolutePath());
+
+        } catch (IOException e) {
+            // 7. Preservar a causa original da exceção para facilitar a depuração
+            throw new VeiculoException("Ocorreu um erro de I/O ao salvar o arquivo de relatório.", e);
+        }
     }
 }
