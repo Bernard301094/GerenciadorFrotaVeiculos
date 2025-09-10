@@ -175,8 +175,85 @@ public class RelatorioFrota {
     }
 
     public String gerarRelatorioQuilometragem(FrotaVeiculos frota) {
+        if (frota == null || frota.getVeiculos() == null || frota.getVeiculos().isEmpty()) {
+            throw new VeiculoException("Não há veículos na frota.");
+        }
 
-        return "";
+        int totalCarros = 0, totalMotos = 0, totalCaminhoes = 0;
+
+        double kmTotalFrota = 0.0, totalKmCarros = 0.0, totalKmMotos = 0.0, totalKmCaminhoes = 0.0;
+
+        for (Veiculo veiculo : frota.getVeiculos()) {
+            switch (veiculo) {
+            case Carro carro -> {
+                if (carro.getQuilometragem() != null) {
+                    totalKmCarros += carro.getQuilometragem();
+                    totalCarros++;
+                }
+            }
+            case Motocicleta motocicleta -> {
+                if (motocicleta.getQuilometragem() != null) {
+                    totalKmMotos += motocicleta.getQuilometragem();
+                    totalMotos++;
+                }
+            }
+            case Caminhao caminhao -> {
+                if (caminhao.getQuilometragem() != null) {
+                    totalKmCaminhoes += caminhao.getQuilometragem();
+                    totalCaminhoes++;
+                }
+            }
+            default -> throw new VeiculoException("Valor inesperado: " + veiculo);
+            }
+        }
+
+        kmTotalFrota += totalKmCarros + totalKmMotos + totalKmCaminhoes;
+        int totalVeiculos = totalCarros + totalMotos + totalCaminhoes;
+
+        if (totalVeiculos == 0) {
+            return "Nenhum veículo possui quilometragem registrada.";
+        }
+
+        double mediaKmCarros = (totalCarros > 0) ? totalKmCarros / totalCarros : 0.0,
+                mediaKmMotos = (totalMotos > 0) ? totalKmMotos / totalMotos : 0.0,
+                mediaKmCaminhoes = (totalCaminhoes > 0) ? totalKmCaminhoes / totalCaminhoes : 0.0,
+                mediaKmGeral = (totalVeiculos > 0) ? kmTotalFrota / totalVeiculos : 0.0;
+
+        double percCarros = (kmTotalFrota > 0) ? (totalKmCarros * 100.0 / kmTotalFrota) : 0.0;
+        double percMotos = (kmTotalFrota > 0) ? (totalKmMotos * 100.0 / kmTotalFrota) : 0.0;
+        double percCaminhoes = (kmTotalFrota > 0) ? (totalKmCaminhoes * 100.0 / kmTotalFrota) : 0.0;
+
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+        String dataAtual = sdf.format(new Date());
+
+        StringBuilder relatorio = new StringBuilder();
+
+        relatorio.append("=== RELATÓRIO DE QUILOMETRAGEM DA FROTA ===\n");
+        relatorio.append("Data: ").append(dataAtual).append("\n\n");
+
+        relatorio.append("RESUMO GERAL:\n");
+        relatorio.append(String.format("- Total de veículos: %d\n", totalVeiculos));
+        relatorio.append(String.format("- Quilometragem total da frota: %.2f km\n", kmTotalFrota));
+        relatorio.append(String.format("- Quilometragem média da frota: %.2f km\n\n", mediaKmGeral));
+
+        relatorio.append("BREAKDOWN POR CATEGORIA:\n");
+        relatorio.append(String.format("Carros (%d unidades):\n", totalCarros));
+        relatorio.append(String.format("- Quilometragem total: %.2f km\n", totalKmCarros));
+        relatorio.append(String.format("- Quilometragem média: %.2f km\n", mediaKmCarros));
+        relatorio.append(String.format("- Percentual do total: %.1f%%\n\n", percCarros));
+
+        relatorio.append(String.format("Motocicletas (%d unidades):\n", totalMotos));
+        relatorio.append(String.format("- Quilometragem total: %.2f km\n", totalKmMotos));
+        relatorio.append(String.format("- Quilometragem média: %.2f km\n", mediaKmMotos));
+        relatorio.append(String.format("- Percentual do total: %.1f%%\n\n", percMotos));
+
+        relatorio.append(String.format("Caminhões (%d unidades):\n", totalCaminhoes));
+        relatorio.append(String.format("- Quilometragem total: %.2f km\n", totalKmCaminhoes));
+        relatorio.append(String.format("- Quilometragem média: %.2f km\n", mediaKmCaminhoes));
+        relatorio.append(String.format("- Percentual do total: %.1f%%\n\n", percCaminhoes));
+
+
+        return relatorio.toString();
     }
 
     public void exportarRelatorios(String conteudo, String formato) {
